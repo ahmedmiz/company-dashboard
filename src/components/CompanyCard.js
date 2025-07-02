@@ -1,10 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import { Layout, Card, Form, Input, Button, Space, Modal, message, Typography, Spin, Row, Col, Tag, Image } from 'antd';
-import { ExclamationCircleOutlined, CheckOutlined, DeleteOutlined, UserOutlined, LockOutlined } from '@ant-design/icons';
-import axios from 'axios';
 
-const { Header, Content } = Layout;
-const { Title, Text } = Typography;
+import { Card, Button, Space, Modal, Typography, Row, Col, Tag, Image } from 'antd';
+import { ExclamationCircleOutlined, CheckOutlined, DeleteOutlined } from '@ant-design/icons';
+
+const { Text } = Typography;
 const { confirm } = Modal;
 
 
@@ -52,7 +50,7 @@ export const CompanyCard = ({ company, onApprove, onDelete }) => {
                     type="primary"
                     icon={<CheckOutlined />}
                     onClick={handleApprove}
-                    style={{ color: '#52c41a', borderColor: '#52c41a' }}
+                    style={{ color: 'white', borderColor: '#52c41a' }}
                 >
                     Approve
                 </Button>,

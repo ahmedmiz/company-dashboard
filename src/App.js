@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { isAuthenticated } from './utils/auth'
 import { Dashboard } from './pages/Dashboard.js'
 import { LoginForm } from './components/LoginForm.js';
-
+import 'antd/dist/reset.css'; // or 'antd/dist/antd.css' for older versions
 const App = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 

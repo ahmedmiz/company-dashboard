@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Layout, Button, message, Typography, Spin } from 'antd';
+import { Layout, Button, Typography, Spin, Alert } from 'antd';
 
 import { api } from '../services/api';
 import { CompanyCard } from '../components/CompanyCard'
@@ -13,42 +13,45 @@ const { Title, Text } = Typography;
 export const Dashboard = () => {
     const [companies, setCompanies] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [alert, setAlert] = useState(null);
     const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:3000';
-    console.log(API_BASE_URL);
+
     const fetchUnapprovedCompanies = async () => {
         try {
             setLoading(true);
             const response = await api.get(`${API_BASE_URL}/company/unapproved/companies`);
-            console.log("compaines is :::: ", companies, "        - > ", response)
-            setCompanies(Array.isArray(response.data) ? response.data : []);
+            setCompanies(Array.isArray(response.data.data) ? response.data.data : []);
+            setAlert(null);
         } catch (error) {
-            message.error('Failed to fetch companies');
+            setAlert({ type: 'error', message: 'Failed to fetch companies' });
+            setCompanies([]);
         } finally {
             setLoading(false);
         }
     };
 
     useEffect(() => {
-        fetchUnapprovedCompanies();
+        fetchUnapprovedCompanies(); // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const handleApprove = async (companyId) => {
         try {
+
             await api.put(`${API_BASE_URL}/company/approveUser/${companyId}`);
-            message.success('Company approved successfully!');
+            setAlert({ type: 'success', message: 'Company approved successfully!' });
             fetchUnapprovedCompanies(); // Refresh the list
         } catch (error) {
-            message.error('Failed to approve company');
+            setAlert({ type: 'error', message: 'Failed to approve company' });
         }
     };
 
     const handleDelete = async (userId) => {
         try {
             await api.delete(`${API_BASE_URL}/user/delete/user/${userId}`);
-            message.success('Company deleted successfully!');
+            setAlert({ type: 'success', message: 'Company deleted successfully!' });
             fetchUnapprovedCompanies(); // Refresh the list
         } catch (error) {
-            message.error('Failed to delete company');
+            setAlert({ type: 'error', message: 'Failed to delete company' });
         }
     };
 
@@ -70,8 +73,19 @@ export const Dashboard = () => {
                 </Button>
             </Header>
 
+
             <Content style={{ padding: '24px', background: '#f0f2f5' }}>
                 <div style={{ background: '#fff', padding: '24px', borderRadius: '8px' }}>
+                    {alert && (
+                        <Alert
+                            style={{ marginBottom: 16 }}
+                            message={alert.message}
+                            type={alert.type}
+                            showIcon
+                            closable
+                            onClose={() => setAlert(null)}
+                        />
+                    )}
                     <div style={{ marginBottom: '24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                         <Title level={4} style={{ margin: 0 }}>
                             Unapproved Companies ({companies.length})
