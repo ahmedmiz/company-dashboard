@@ -6,7 +6,7 @@ const { Text } = Typography;
 const { confirm } = Modal;
 
 
-export const CompanyCard = ({ company, onApprove, onDelete  , onBan}) => {
+export const CompanyCard = ({ company, onApprove, onDelete }) => {
     const { user } = company;
 
     const handleApprove = () => {
@@ -36,19 +36,7 @@ export const CompanyCard = ({ company, onApprove, onDelete  , onBan}) => {
             },
         });
     };
-     const handleBan = () => {
-        confirm({
-            title: 'Ban Company',
-            icon: <ExclamationCircleOutlined />,
-            content: 'Are you sure you want to Ban this company? This action cannot be undone.',
-            okText: 'Yes, Delete',
-            okType: 'danger',
-            cancelText: 'Cancel',
-            onOk() {
-                onBan(user.id);
-            },
-        });
-    };
+     
 
     return (
         <Card
@@ -74,14 +62,7 @@ export const CompanyCard = ({ company, onApprove, onDelete  , onBan}) => {
                 >
                     Delete
                 </Button>
-                ,
-                 <Button
-                    danger
-                    icon={<DeleteOutlined />}
-                    onClick={handleBan}
-                >
-                    Ban
-                </Button>
+            
             ]}
         >
             <Row gutter={16}>

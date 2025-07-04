@@ -1,15 +1,9 @@
- 
-
 import { useState, useEffect } from 'react';
-
-
-import { Card, Button, Space, Modal, Typography, Alert , Spin } from 'antd';
-
-
+import { Card, Button, Space, Modal, Typography, Alert, Spin, Row, Col, Tag, Image } from 'antd';
+import { ExclamationCircleOutlined, CheckOutlined, DeleteOutlined } from '@ant-design/icons';
 import { api } from '../services/api';
-import { CompanyCard } from './CompanyCard'
-const { Title, Text } = Typography;
 
+const { Title, Text } = Typography;
 
 export const Companies = () => {
     const [companies, setCompanies] = useState([]);
@@ -17,8 +11,6 @@ export const Companies = () => {
     const [alert, setAlert] = useState(null);
     const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:3000';
     
-
-
     const fetchCompanies = async () => {
         try {
             setLoading(true);
@@ -37,29 +29,12 @@ export const Companies = () => {
         fetchCompanies(); // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    const handleApprove = async (companyId) => {
-        // try {
+   
 
-        //     await api.put(`${API_BASE_URL}/company/approveUser/${companyId}`);
-        //     setAlert({ type: 'success', message: 'Company approved successfully!' });
-        //     fetchCompanies(); // Refresh the list
-        // } catch (error) {
-        //     setAlert({ type: 'error', message: 'Failed to approve company' });
-        // }
-    };
-
-    const handleDelete = async (userId) => {
-        // try {
-        //     await api.delete(`${API_BASE_URL}/user/delete/user/${userId}`);
-        //     setAlert({ type: 'success', message: 'Company deleted successfully!' });
-        //     fetchCompanies(); // Refresh the list
-        // } catch (error) {
-        //     setAlert({ type: 'error', message: 'Failed to delete company' });
-        // }
-    };
+   
     const handleBan = async (userId) => { 
          try {
-            await api.delete(`${API_BASE_URL}/user/unApprove/${userId}`);
+            await api.put(`${API_BASE_URL}/user/unApprove/${userId}`);
             setAlert({ type: 'success', message: 'Company Ban successfully!' });
             fetchCompanies(); // Refresh the list
         } catch (error) {
@@ -82,7 +57,7 @@ export const Companies = () => {
                     )}
                     <div style={{ marginBottom: '24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                         <Title level={4} style={{ margin: 0 }}>
-                             Companies ({companies.length})
+                            Companies ({companies.length})
                         </Title>
                         <Button onClick={fetchCompanies} loading={loading}>
                             Refresh
@@ -97,16 +72,123 @@ export const Companies = () => {
                             <Text type="secondary">No  companies found</Text>
                         </div>
                     ) : (
-                        companies.map((company) => (
-                            <CompanyCard
-                                key={company.user?.id}
-                                company={company}
-                                onApprove={handleApprove}
-                                onDelete={handleDelete}
-                                onBan={handleBan}
-                                type={"company"}
-                            />
-                        ))
+                        companies.map((company) => {
+                            const { user } = company;
+                            const handleBan = () => {
+                                Modal.confirm({
+                                    title: 'Ban Company',
+                                    icon: <ExclamationCircleOutlined />,
+                                    content: 'Are you sure you want to Ban this company? This action cannot be undone.',
+                                    okText: 'Yes, Ban',
+                                    okType: 'danger',
+                                    cancelText: 'Cancel',
+                                    onOk() {
+                                        handleBan(user.id);
+                                    },
+                                });
+                            };
+
+                            return (
+                                <Card
+                                    key={user.id}
+                                    hoverable
+                                    style={{
+                                        marginBottom: 16,
+                                        borderRadius: '8px',
+                                        boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+                                    }}
+                                    actions={[
+                                        <Button
+                                            onClick={handleBan}
+                                        >
+                                            Ban
+                                        </Button>
+                                    ]}
+                                >
+                                    <Row gutter={16}>
+                                        <Col span={12}>
+                                            <Space direction="vertical" size="small" style={{ width: '100%' }}>
+                                                <div>
+                                                    <Text strong>Company Name:</Text>
+                                                    <br />
+                                                    <Text>{company.companyName || 'Not provided'}</Text>
+                                                </div>
+                                                <div>
+                                                    <Text strong>Owner Name:</Text>
+                                                    <br />
+                                                    <Text>{company.ownerName || 'Not provided'}</Text>
+                                                </div>
+                                                <div>
+                                                    <Text strong>Email:</Text>
+                                                    <br />
+                                                    <Text>{company.officialEmail || user.email || 'Not provided'}</Text>
+                                                </div>
+                                                <div>
+                                                    <Text strong>Phone:</Text>
+                                                    <br />
+                                                    <Text>{company.officePhoneNumber || user.phoneNumber || 'Not provided'}</Text>
+                                                </div>
+                                                <div>
+                                                    <Text strong>Status:</Text>
+                                                    <br />
+                                                    <Tag color="orange">Pending Approval</Tag>
+                                                </div>
+                                            </Space>
+                                        </Col>
+                                        <Col span={12}>
+                                            <Space direction="vertical" size="small" style={{ width: '100%' }}>
+                                                <div>
+                                                    <Text strong>Registration Number:</Text>
+                                                    <br />
+                                                    <Text>{company.commercialRegistrationNumber || 'Not provided'}</Text>
+                                                </div>
+                                                <div>
+                                                    <Text strong>License Number:</Text>
+                                                    <br />
+                                                    <Text>{company.licenseNumber || 'Not provided'}</Text>
+                                                </div>
+                                                <div>
+                                                    <Text strong>Website:</Text>
+                                                    <br />
+                                                    <Text>{company.websiteUrl || 'Not provided'}</Text>
+                                                </div>
+                                                <div>
+                                                    <Text strong>City:</Text>
+                                                    <br />
+                                                    <Text>{company.officeCity || company.city || 'Not provided'}</Text>
+                                                </div>
+                                                {(company.licenseImage || company.idImage) && (
+                                                    <div>
+                                                        <Text strong>Documents:</Text>
+                                                        <br />
+                                                        <Space>
+                                                            {company.licenseImage && (
+                                                                <Image
+                                                                    width={50}
+                                                                    height={50}
+                                                                    src={company.licenseImage}
+                                                                    placeholder="License"
+                                                                    style={{ objectFit: 'cover', borderRadius: '4px' }}
+                                                                />
+                                                            )}
+                                                            {company.idImage && (
+                                                                <Image
+                                                                    width={50}
+                                                                    height={50}
+                                                                    src={company.idImage}
+                                                                    placeholder="ID"
+                                                                    style={{ objectFit: 'cover', borderRadius: '4px' }}
+                                                                />
+                                                            )}
+                                                        </Space>
+                                                    </div>
+                                                )}
+                                            </Space>
+                                        </Col>
+                                    </Row>
+                                </Card>
+                            );
+                        })
                     )}
             </div>
             </>

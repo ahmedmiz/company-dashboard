@@ -34,7 +34,7 @@ export const Kafeels = () => {
 
     const handleBan = async (userId) => {
         try {
-            await api.delete(`${API_BASE_URL}/user/unApprove/${userId}`);
+            await api.put(`${API_BASE_URL}/user/unApprove/${userId}`);
             setAlert({ type: 'success', message: 'Kafeel deleted successfully!' });
             fetchKafeels();
         } catch (error) {
