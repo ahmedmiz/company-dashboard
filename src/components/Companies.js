@@ -29,19 +29,16 @@ export const Companies = () => {
         fetchCompanies(); // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-   
-
-   
-    const handleBan = async (userId) => { 
-         try {
+    const handleBan = async (userId) => {
+        try {
             await api.put(`${API_BASE_URL}/user/unApprove/${userId}`);
-            setAlert({ type: 'success', message: 'Company Ban successfully!' });
+            setAlert({ type: 'success', message: 'Company banned successfully!' });
             fetchCompanies(); // Refresh the list
         } catch (error) {
-            setAlert({ type: 'error', message: 'Failed to Ban company' });
+            setAlert({ type: 'error', message: 'Failed to ban company' });
         }
+    };
 
-    }
     return (
         <>
         <div style={{ background: '#fff', padding: '24px', borderRadius: '8px' }}>
@@ -74,16 +71,17 @@ export const Companies = () => {
                     ) : (
                         companies.map((company) => {
                             const { user } = company;
-                            const handleBan = () => {
+
+                            const showBanConfirm = (userId) => {
                                 Modal.confirm({
                                     title: 'Ban Company',
                                     icon: <ExclamationCircleOutlined />,
-                                    content: 'Are you sure you want to Ban this company? This action cannot be undone.',
+                                    content: 'Are you sure you want to ban this company? This action cannot be undone.',
                                     okText: 'Yes, Ban',
                                     okType: 'danger',
                                     cancelText: 'Cancel',
                                     onOk() {
-                                        handleBan(user.id);
+                                        handleBan(userId);
                                     },
                                 });
                             };
@@ -98,9 +96,7 @@ export const Companies = () => {
                                         boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
                                     }}
                                     actions={[
-                                        <Button
-                                            onClick={handleBan}
-                                        >
+                                        <Button onClick={() => showBanConfirm(user.id)}>
                                             Ban
                                         </Button>
                                     ]}

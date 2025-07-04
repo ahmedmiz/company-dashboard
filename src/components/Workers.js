@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { Card, Button, Space, Modal, Typography, Alert, Spin } from 'antd';
 import { api } from '../services/api';
+import { ExclamationCircleOutlined } from '@ant-design/icons';
 
 const { Title, Text } = Typography;
 
@@ -42,6 +43,20 @@ export const Workers = () => {
         }
     };
 
+    const showBanConfirm = (userId) => {
+        Modal.confirm({
+            title: 'Ban Worker',
+            icon: <ExclamationCircleOutlined />,
+            content: 'Are you sure you want to ban this worker? This action cannot be undone.',
+            okText: 'Yes, Ban',
+            okType: 'danger',
+            cancelText: 'Cancel',
+            onOk() {
+                handleBan(userId);
+            },
+        });
+    };
+
     return (
         <div style={{ background: '#fff', padding: '24px', borderRadius: '8px' }}>
             {alert && (
@@ -78,8 +93,7 @@ export const Workers = () => {
                         title={item.user.firstName || item.user.email}
                         extra={
                             <Space>
-                            
-                                <Button danger onClick={() => handleBan(item.user.id)}>
+                                <Button danger onClick={() => showBanConfirm(item.user.id)}>
                                     Ban
                                 </Button>
                             </Space>

@@ -1,8 +1,9 @@
 // src/components/Kafeels.js
 
 import { useState, useEffect } from 'react';
-import { Card, Button, Space, Typography, Alert, Spin } from 'antd';
+import { Card, Button, Space, Typography, Alert, Spin, Modal } from 'antd';
 import { api } from '../services/api';
+import { ExclamationCircleOutlined } from '@ant-design/icons';
 
 const { Title, Text } = Typography;
 
@@ -30,8 +31,6 @@ export const Kafeels = () => {
         fetchKafeels();
     }, []);
 
-
-
     const handleBan = async (userId) => {
         try {
             await api.put(`${API_BASE_URL}/user/unApprove/${userId}`);
@@ -40,6 +39,20 @@ export const Kafeels = () => {
         } catch (error) {
             setAlert({ type: 'error', message: 'Failed to delete kafeel' });
         }
+    };
+
+    const showBanConfirm = (userId) => {
+        Modal.confirm({
+            title: 'Ban Kafeel',
+            icon: <ExclamationCircleOutlined />,
+            content: 'Are you sure you want to ban this kafeel? This action cannot be undone.',
+            okText: 'Yes, Ban',
+            okType: 'danger',
+            cancelText: 'Cancel',
+            onOk() {
+                handleBan(userId);
+            },
+        });
     };
 
     return (
@@ -78,8 +91,8 @@ export const Kafeels = () => {
                         title={item.userName || item.user.firstName || item.user.email}
                         extra={
                             <Space>
-                                <Button danger onClick={() => handleBan(item.user.id)}>
-                                Ban
+                                <Button danger onClick={() => showBanConfirm(item.user.id)}>
+                                    Ban
                                 </Button>
                             </Space>
                         }
